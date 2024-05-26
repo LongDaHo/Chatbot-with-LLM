@@ -1,0 +1,10 @@
+image:
+  repository: hoanglong2410/chatbot
+  tag: "1.0.0"
+  pullPolicy: Always
+config:
+  huggingface_api_token: "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"
+  tokenizer_name: "BAAI/llm-embedder"
+  inference_server_url: "https://fca3-2001-ee0-49d8-3dd0-f6e7-96c7-9184-f43e.ngrok-free.app"
+  otlp_endpoint: "http://opentelemetry-collector.observability.svc.cluster.local:4317"
+  svc_name: "tgi-traces"

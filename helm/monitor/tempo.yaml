@@ -1,0 +1,28 @@
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+
+ingester:
+  trace_idle_period: 10s  
+  max_block_bytes: 1_000_000  
+  max_block_duration: 1m  
+
+compactor:
+  compaction:
+    compaction_window: 1h             
+    max_compaction_objects: 1000000   
+    block_retention: 1h
+    compacted_block_retention: 10m
+    flush_size_bytes: 5242880 
+
+storage:
+  trace:
+    backend: s3
+    s3:
+      access_key: rootuser
+      secret_key: rootpass123
+      endpoint: http://console.minio.svc.cluster.local:9090
+      bucket: traces 
+      insecure: true

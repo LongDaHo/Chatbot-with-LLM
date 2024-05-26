@@ -1,0 +1,1 @@
+The chat-with-gemma server can be accessed via port 8051 on the following DNS name from within your cluster
