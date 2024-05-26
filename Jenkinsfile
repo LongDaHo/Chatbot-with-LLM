@@ -9,7 +9,7 @@ pipeline {
     }
 
     environment{
-        registry = 'hoanglong2410/chat-with-gemma'
+        registry = 'hoanglong2410/chatbot
         registryCredential = 'dockerhub_id'  
         version = "2.0.0"    
     }
@@ -32,7 +32,7 @@ pipeline {
                 kubernetes {
                     containerTemplate {
                         name 'helm' // Name of the container to be used for helm upgrade
-                        image 'hoanglong2410/jenkins:lts'// The image containing helm
+                        image 'hoanglong2410/jenkins:lts' // The image containing helm
                         imagePullPolicy 'Always' // Always pull image in case of using the same tag
                     }
                 }
@@ -40,7 +40,7 @@ pipeline {
             steps {
                 script {
                     container('helm') {
-                        sh("helm upgrade --install chat-with-gemma ./helm/model-serving --namespace model-serving")
+                        sh("helm upgrade --install chatbot ./helm/model-serving --namespace model-serving")
                     }
                 }
             }
