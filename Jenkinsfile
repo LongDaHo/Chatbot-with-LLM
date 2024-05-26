@@ -40,7 +40,7 @@ pipeline {
             steps {
                 script {
                     container('helm') {
-                        sh("helm upgrade --install chat-with-gemma ./deployments/model-serving --namespace model-serving")
+                        sh("helm upgrade --install chat-with-gemma ./helm/model-serving --namespace model-serving")
                     }
                 }
             }
