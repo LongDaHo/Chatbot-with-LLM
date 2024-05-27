@@ -1,6 +1,6 @@
 apiVersion: v2
-name: chat-with-gemma
-description: My Helm Chart for chat-with-gemma
+name: chatbot
+description: My Helm Chart for Chatbot
 
 # A chart can be `application` or `library`,
 # we don't use `library` so often
