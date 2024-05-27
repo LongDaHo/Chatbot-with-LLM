@@ -32,7 +32,7 @@ pipeline {
                 kubernetes {
                     containerTemplate {
                         name 'helm' // Name of the container to be used for helm upgrade
-                        image 'hoanglong2410/jenkins:lts'// The image containing helm
+                        image 'fullstackdatascience/jenkins-k8s:lts'// The image containing helm
                         imagePullPolicy 'Always' // Always pull image in case of using the same tag
                     }
                 }
