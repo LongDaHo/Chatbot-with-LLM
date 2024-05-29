@@ -10,7 +10,7 @@ metadata:
       
 spec:
   rules:
-  - host: mlops.chatbot.com # You can also use "34.123.248.115.nip.io", please refer to https://github.com/GoogleCloudPlatform/community/blob/master/archived/nginx-ingress-gke/index.md
+  - host: mlops.chatbot.com 
     http:
       paths:
       - path: /
