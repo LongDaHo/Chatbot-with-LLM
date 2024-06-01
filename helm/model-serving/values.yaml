@@ -1,6 +1,6 @@
 image:
   repository: hoanglong2410/chatbot
-  tag: "1.0.0"
+  tag: "latest"
   pullPolicy: Always
 config:
   huggingface_api_token: "<YOUR_TOKEN>"
