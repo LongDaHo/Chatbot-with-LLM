@@ -154,7 +154,7 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 helm upgrade --install monitor-stack prometheus-community/kube-prometheus-stack --values grafana-prometheus.yaml -n observability 
 ```
 
-+ Deploy Loki and FlentBit
++ Deploy Loki and FluentBit
 ```bash
 helm repo add grafana https://grafana.github.io/helm-charts
 helm install -f loki.yaml loki grafana/loki-stack -n observability
