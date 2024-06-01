@@ -278,7 +278,7 @@ The pipeline will take about 10 minutes. You can confirm the successful deployme
 ![](assets/jenkins_logs.png)
 
 Here is the Stage view in Jenkins pipeline:
-![](assets/jenkins_success.png)
+![](assets/jenkins_stage.png)
 
 Now, you have successfulle run your CICD pipeline with Jenkins.
 Let checkout whether the pods have been deployed successfully in the `model-serving` namespace.
