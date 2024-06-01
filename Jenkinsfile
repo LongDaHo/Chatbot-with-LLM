@@ -11,7 +11,7 @@ pipeline {
     environment{
         registry = 'hoanglong2410/chatbot'
         registryCredential = 'dockerhub_id'  
-        version = "2.0.0"    
+        version = "latest"    
     }
 
     stages {
