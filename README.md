@@ -95,8 +95,24 @@ helm upgrade --install nginx-ingress-controller .
 ```
 After that, nginx ingress controller will be created in `nginx-ingress` namespace.
 
-#### 2.2. Deploy application to GKE cluster manually
-Our chatbot is deployed by Langchain and Streamlit.
+#### 2.2. Serving LLM using Huggingface TGI
++ Firstly, let create your huggingface account and a token with READ permission.
++ Next, let define `volume` (where you store your data) and `huggingface_api_token`.
+```bash
+export volume=<PLACE_WHERE_STORE_YOUR_DATA>
+export HUGGINGFACEHUB_API_TOKEN=<YOUR_TOKEN>
+```
++ Finally, serving your LLM ([LongDHo/TinyLlama](https://huggingface.co/LongDHo/TinyLlama) in my case) model with Huggingface TGI by docker.
+```bash
+docker run --gpus all --shm-size 1g -p 8080:80 -e HUGGING_FACE_HUB_TOKEN=$HUGGINGFACEHUB_API_TOKEN  -v $volume:/data ghcr.io/huggingface/text-generation-inference:1.4 --model-id LongDHo/TinyLlama
+```
+
+##### Notice: 
+To GKE cluster can access your TGI, your must forward your 8080 port, for examples:
+![](assets/ngrok.gif)
+
+#### 2.3. Deploy application to GKE cluster manually
+Our chatbot is deployed by Langchain and Streamlit. First of all, let update helm/model-serving/values.yaml, replace huggingface_api_token by your Huggingface token and inference_server_url by your ngrok address in my case.
 The UI can be accessed by the host which is defined in `helm/model-serving/templates/nginx-ingress.yaml`.
 
 ```bash
@@ -120,7 +136,7 @@ sudo nano /etc/hosts
 ```
 
 + Open web brower and type `mlops.chatbot.com` to access the Streamlit UI and test the API.
-    ![](assets/chatbot_ui.png)
+    ![](assets/chatbot.gif)
   Here, users can upload pdf files which demonstrate about the topic supposed to discuss and start to chat.
 
 ## 3. Deploy monitoring service
@@ -191,7 +207,7 @@ Update the IP address of the newly created instance and the SSH key for connecti
 ### 4.2. Install Docker and Jenkins in GCE
 Firstly, let install docker and change its data root to /dev/shm where we can store our [chatbot docker image](https://hub.docker.com/repository/docker/hoanglong2410/chatbot/general).
 ```bash
-ansible-playbook -i ../inventory dinstall_and_change_docker_data_root.yaml
+ansible-playbook -i ../inventory install_and_change_docker_data_root.yaml
 ```
 After that, let pull jenkins image.
 ```bash
@@ -200,9 +216,10 @@ ansible-playbook -i ../inventory pull_jenkins_image.yaml
 Wait a few minutes, if you see the output like this it indicates that Jenkins has been successfully installed on a Compute Engine instance.
 
 ### 4.3. Connect to Jenkins UI in Compute Engine
-Access the instance using the command:
+Access your [Compute Instance UI](https://console.cloud.google.com/compute/instances). Look at `Connect` options of your instance (instance-0 in my case) and click on the down arrowhead.
+Then choose `view gcloud command` and copy it.
 ```bash
-ssh -i ~/.ssh/id_rsa YOUR_USERNAME@YOUR_EXTERNAL_IP
+gcloud compute ssh --zone ...
 ```
 
 Open web brower and type `[YOUR_EXTERNAL_IP]:8081` for access Jenkins UI. To Unlock Jenkins, please execute the following commands:
@@ -213,87 +230,60 @@ Copy the password and you can access Jenkins UI.
 
 It will take a few minutes for Jenkins to be set up successfully on their Compute Engine instance.
 
-![](gifs/connect_jenkins_ui_out.gif)
+![](assets/jenkins_setup.gif)
 
-Create your user ID, and Jenkins will be ready :D
+Let continue as admin!
 
 ### 4.4. Setup Jenkins
-#### 4.4.1. Connect to Github repo
-+ Add Jenkins url to webhooks in Github repo
+#### 4.4.1. Install jenkins plugins.
+Go to Manage Jenkins > Plugins > Available plugins. Then, install these plugins: Docker, Docker Pipeline, Docker API, Kubernetes, Kubernetes Client API, Kubernetes Credentials, GCloud SDK. Then, restart your Jenkins container.
 
-![](gifs/add_webhook_out.gif)
-+ Add Github credential to Jenkins (select appropriate scopes for the personal access token)
-
-
-![](gifs/connect_github_out.gif)
+#### 4.4.2. Create Github token.
+Go to Settings > Developer Settings > Personal Access Tokens > Tokens (classic) > Generate new token > Generate new token (classic).
+![](assets/github_token.gif)
 
 
-#### 4.4.2. Add `PINECONE_APIKEY` for connecting to Pinecone Vector DB in the global environment varibles at `Manage Jenkins/System`
+
+#### 4.4.3. Create Dockerhub token.
+Go to My Account > Security > New Access Token.
+![](assets/dockerhub_token.gif)
 
 
-![](gifs/pinecone_apikey_out.gif)
-
-
-#### 4.4.3. Add Dockerhub credential to Jenkins at `Manage Jenkins/Credentials`
-
-
-![](gifs/dockerhub_out.gif)
-
-
-#### 4.4.4. Install the Kubernetes, Docker, Docker Pineline, GCloud SDK Plugins at `Manage Jenkins/Plugins`
-
-After successful installation, restart the Jenkins container in your Compute Engine instance:
-```bash
-sudo docker restart jenkins
-```
-
-![](gifs/install_plugin_out.gif)
-
-
-#### 4.4.5. Set up a connection to GKE by adding the cluster certificate key at `Manage Jenkins/Clouds`.
-
-Don't forget to grant permissions to the service account which is trying to connect to our cluster by the following command:
-
+#### 4.4.4. Set up connection to GKE cluster.
+First of all, let grant permissions to the service account which is trying to connect to our cluster by the following command:.
 ```shell
-kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=system:anonymous
+kubectl create ns model-serving
 
-kubectl create clusterrolebinding cluster-admin-default-binding --clusterrole=cluster-admin --user=system:serviceaccount:model-serving:default
+kubectl create clusterrolebinding model-serving-admin-binding --clusterrole=admin --serviceaccount=model-serving:default --namespace=model-serving
+
+kubectl create clusterrolebinding anonymous-admin-binding --clusterrole=admin --user=system:anonymous --namespace=model-serving
 ```
+Next, let get your certificate key and cluster url from ~/.kube/config. Then, go to Manage Jenkins > Cloud > New cloud.
+![](assets/add_gke_con.gif)
 
-![](gifs/connect_gke_out.gif)
-
-#### 4.4.6. Install Helm on Jenkins to enable application deployment to GKE cluster.
-
-+ You can use the `Dockerfile-jenkins-k8s` to build a new Docker image. After that, push this newly created image to Dockerhub. Finally replace the image reference at `containerTemplate` in `Jenkinsfile` or you can reuse my image `duong05102002/jenkins-k8s:latest`
+#### 4.4.5. Install Helm on Jenkins to enable application deployment to GKE cluster.
+You can use the `Dockerfile.Jenkins` to build a new Docker image. After that, push this newly created image to Dockerhub. Finally replace the image reference at `containerTemplate` in `Jenkinsfile` or you can reuse my image `hoanglong2410/jenkins-k8s:lts`.
 
 
 ### 4.5. Continuous deployment
-Create `model-serving` namespace first in your GKE cluster
-```bash
-kubectl create ns model-serving
-```
-
-The CI/CD pipeline will consist of three stages:
-+ Tesing model correctness.
-    + Replace the new pretrained model in `app/main.py`. I recommend accessing the pretrained model by downloading it from another storage, such as Google Drive or Hugging Face.
-    + If you store the pretrained model directly in a directory and copy it to the Docker image during the application build, it may consume a significant amount of resource space (RAM) in the pod. This can result in pods not being started successfully.
+The CI/CD pipeline will consist of two stages:
 + Building the image, and pushing the image to Docker Hub.
-+ Finally, it will deploy the application with the latest image from DockerHub to GKE cluster.
-
-![](gifs/run_cicd_out.gif)
++ Deploying the application with the latest image from DockerHub to GKE cluster.
 
 
-The pipeline will take about 8 minutes. You can confirm the successful deployment of the application to the GKE cluster if you see the following output in the pipeline log:
-![](images/deploy_successfully_2gke.png)
+Now, let create our pipeline. Go to New Item > Multibranch Pipeline and add your github url, github token and dockerhub token.
+![](assets/create_jenkins_pipe.gif)
+
+The pipeline will take about 10 minutes. You can confirm the successful deployment of the application to the GKE cluster if you see the following output in the pipeline log:
+![](assets/jenkins_logs.png)
 
 Here is the Stage view in Jenkins pipeline:
+![](assets/jenkins_success.png)
 
-![](images/pipeline.png)
+Now, you have successfulle run your CICD pipeline with Jenkins.
+Let checkout whether the pods have been deployed successfully in the `model-serving` namespace.
+```bash
+kubectl get pod -n model-serving
+```
+You can test our app by typing `mlops.chatbot.com` on your web browser.
 
-Check whether the pods have been deployed successfully in the `models-serving` namespace.
-
-![](gifs/get_pod_out.gif)
-
-Test the API
-
-![](gifs/test_api_out.gif)
