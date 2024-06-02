@@ -1,0 +1,37 @@
+loki:
+  auth_enabled: false
+  isDefault: false
+  commonConfig:
+    replication_factor: 1
+  storage:
+    type: "filesystem"
+
+promtail:
+  enabled: false
+
+fluent-bit:
+  enabled: true
+
+singleBinary:
+  replicas: 1
+  persistence:
+    size: 50Gi
+
+test:
+  enabled: false
+
+gateway:
+  basicAuth:
+    enabled: true
+    username: lokigw
+    password: rQgtlRCQMswOTvh
+
+monitoring:
+  serviceMonitor:
+    enabled: false
+  selfMonitoring:
+    enabled: false
+    grafanaAgent:
+      installOperator: false
+  lokiCanary:
+    enabled: false
