@@ -77,12 +77,12 @@ You will see the popup Connect to the cluster as follows
 ![](assets/connect2gke.png)
 + Copy the line `gcloud container clusters get-credentials ...` into your local terminal.
 
-After run this command, the GKE cluster can be connected from local.
+After run this command, the GKE cluster can be connected from local using [kubectx](https://github.com/ahmetb/kubectx).
 ```bash
 kubectx [YOUR_GKE_CLUSTER_ID]
 ```
 ## 2. Deploy serving service manually
-Using [Helm chart](https://helm.sh/docs/topics/charts/) to deploy application on GKE cluster.
+Using [Helm chart](https://helm.sh/docs/intro/install/) to deploy application on GKE cluster.
 
 ### How-to Guide
 
@@ -147,24 +147,9 @@ Prometheus will scrape metrics from both Node and pods in GKE cluster, Loki will
 Similar to Streamlit UI, Grafana UI can be accessed by the host which is defined in `helm/monitor/grafana-prometheus.yaml`.
 ### How-to Guide
 Firstly, let go to `helm/monitor` directory.
-+ Deploy Prometheus and Grafana.
 ```bash
-kubectl create namespace observability
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm upgrade --install monitor-stack prometheus-community/kube-prometheus-stack --values grafana-prometheus.yaml -n observability
-```
-
-+ Deploy Loki and FluentBit
-```bash
-helm repo add grafana https://grafana.github.io/helm-charts
-helm install -f loki.yaml loki grafana/loki-stack -n observability
-```
-
-+ Deploy Tempo and OpenTelemetry
-```bash
-helm install tempo grafana/tempo -f tempo.yaml -n observability
-helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
-helm install opentelemetry-collector open-telemetry/opentelemetry-collector -f collector.yaml -n observability
+cd helm/monitor
+helm install monitor -n observability
 ```
 
 After that, to access Grafana UI, you can do the following steps:
@@ -180,7 +165,7 @@ sudo nano /etc/hosts
 ```
 
 + Open web brower and type `grafana.chatbot.monitor.com` to access the Grafana UI.
-    ![](assets/grafana.gif)
+    ![](assets/monitor.gif)
 
 
 
@@ -207,12 +192,9 @@ Update the IP address of the newly created instance and the SSH key for connecti
 ### 4.2. Install Docker and Jenkins in GCE
 Firstly, let install docker and change its data root to /dev/shm where we can store our [chatbot docker image](https://hub.docker.com/repository/docker/hoanglong2410/chatbot/general).
 ```bash
-ansible-playbook -i ../inventory install_and_change_docker_data_root.yaml
+ansible-playbook -i ../inventory install_docker.yaml
 ```
-After that, let pull jenkins image.
-```bash
-ansible-playbook -i ../inventory pull_jenkins_image.yaml
-```
+
 Wait a few minutes, if you see the output like this it indicates that Jenkins has been successfully installed on a Compute Engine instance.
 
 ### 4.3. Connect to Jenkins UI in Compute Engine
@@ -258,6 +240,7 @@ kubectl create clusterrolebinding model-serving-admin-binding --clusterrole=admi
 
 kubectl create clusterrolebinding anonymous-admin-binding --clusterrole=admin --user=system:anonymous --namespace=model-serving
 ```
+##### Notice: Should grant permission as admin in real application.
 Next, let get your certificate key and cluster url from ~/.kube/config. Then, go to Manage Jenkins > Cloud > New cloud.
 ![](assets/add_gke_con.gif)
 
