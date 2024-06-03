@@ -12,10 +12,9 @@ presets:
 
 config:
   service:
-    pipelines:      
+    pipelines:
       traces:
         processors:
           - resource
           - k8sattributes
           - batch
-      

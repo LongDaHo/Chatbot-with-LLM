@@ -22,10 +22,10 @@ provider "google" {
 resource "google_container_cluster" "my_gke" {
   name     = "mlops-gke"
   location = var.zone
- 
+
   remove_default_node_pool = true
   initial_node_count       = 1
-  
+
   # // Enable Istio (beta)
   # // https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/container_cluster#nested_istio_config
   # // not yet supported on Autopilot mode
@@ -61,4 +61,3 @@ resource "google_container_node_pool" "my_gke_nodes" {
 
   initial_node_count = 1
 }
-

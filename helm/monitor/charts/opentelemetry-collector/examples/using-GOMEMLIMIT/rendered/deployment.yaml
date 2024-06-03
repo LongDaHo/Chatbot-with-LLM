@@ -11,7 +11,7 @@ metadata:
     app.kubernetes.io/instance: example
     app.kubernetes.io/version: "0.101.0"
     app.kubernetes.io/managed-by: Helm
-    
+
 spec:
   replicas: 1
   revisionHistoryLimit: 10
@@ -26,14 +26,14 @@ spec:
     metadata:
       annotations:
         checksum/config: a32316e7f1106e70882004e9b8bb0bcdb96606da2f45e39582ac4bfe9e47b0f8
-        
+
       labels:
         app.kubernetes.io/name: opentelemetry-collector
         app.kubernetes.io/instance: example
         component: standalone-collector
-        
+
     spec:
-      
+
       serviceAccountName: example-opentelemetry-collector
       securityContext:
         {}
@@ -48,7 +48,7 @@ spec:
           image: "otel/opentelemetry-collector-k8s:0.101.0"
           imagePullPolicy: IfNotPresent
           ports:
-            
+
             - name: jaeger-compact
               containerPort: 6831
               protocol: UDP

@@ -143,7 +143,7 @@ config:
 
 ### Configuration for Kubernetes Attributes Processor
 
-The collector can be configured to add Kubernetes metadata, such as pod name and namespace name, as resource attributes to incoming logs, metrics and traces. 
+The collector can be configured to add Kubernetes metadata, such as pod name and namespace name, as resource attributes to incoming logs, metrics and traces.
 
 This feature is disabled by default. It has the following requirements:
 

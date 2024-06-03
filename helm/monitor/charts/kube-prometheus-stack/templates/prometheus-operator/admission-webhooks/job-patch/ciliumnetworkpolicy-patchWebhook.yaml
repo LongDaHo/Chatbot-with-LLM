@@ -12,7 +12,7 @@ metadata:
     helm.sh/hook-weight: "-5"
     {{- with .Values.prometheusOperator.admissionWebhooks.patch.annotations }}
     {{ toYaml . | nindent 4 }}
-    {{- end }}   
+    {{- end }}
   labels:
     app: {{ template "kube-prometheus-stack.name" $ }}-admission-patch
     {{- include "kube-prometheus-stack.labels" $ | nindent 4 }}
@@ -30,4 +30,3 @@ spec:
     {{- end }}
 {{- end }}
 {{- end }}
-

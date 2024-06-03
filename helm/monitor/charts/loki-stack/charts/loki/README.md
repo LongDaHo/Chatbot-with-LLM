@@ -32,7 +32,7 @@ In version 2.12.0, we enabled memberlist by default and added additional kuberne
 
 If you already use `memberlist`, just review the config (`.Values.config.memberlist`) to make sure new `memberlist` config matches with your current configuration.
 
-If you use another implementation(`etcd`, `consul`, `inmemory`) for the ring, you can disable `memberlist` with setting `.Values.config.memberlist` to `null`. 
+If you use another implementation(`etcd`, `consul`, `inmemory`) for the ring, you can disable `memberlist` with setting `.Values.config.memberlist` to `null`.
 It prevents from enabling `memberlist` and creating additional kubernetes service.
 
 ### From 2.12.x to 2.13.0

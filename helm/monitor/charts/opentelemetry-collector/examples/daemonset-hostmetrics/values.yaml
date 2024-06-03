@@ -9,4 +9,3 @@ command:
 presets:
   hostMetrics:
     enabled: true
-

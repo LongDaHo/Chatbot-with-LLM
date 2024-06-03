@@ -15,4 +15,3 @@ variable "zone" {
   description = "The zone the cluster in"
   default     = "asia-southeast1-b"
 }
-

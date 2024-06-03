@@ -107,7 +107,7 @@ export HUGGINGFACEHUB_API_TOKEN=<YOUR_TOKEN>
 docker run --gpus all --shm-size 1g -p 8080:80 -e HUGGING_FACE_HUB_TOKEN=$HUGGINGFACEHUB_API_TOKEN  -v $volume:/data ghcr.io/huggingface/text-generation-inference:1.4 --model-id LongDHo/TinyLlama
 ```
 
-##### Notice: 
+##### Notice:
 To GKE cluster can access your TGI, your must forward your 8080 port, for examples:
 ![](assets/ngrok.gif)
 
@@ -151,7 +151,7 @@ Firstly, let go to `helm/monitor` directory.
 ```bash
 kubectl create namespace observability
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm upgrade --install monitor-stack prometheus-community/kube-prometheus-stack --values grafana-prometheus.yaml -n observability 
+helm upgrade --install monitor-stack prometheus-community/kube-prometheus-stack --values grafana-prometheus.yaml -n observability
 ```
 
 + Deploy Loki and FluentBit
@@ -191,7 +191,7 @@ Jenkins is deployed on Google Compute Engine using [Ansible](https://docs.ansibl
 ### 4.1. Spin up your instance
 Create your [service account](https://console.cloud.google.com/iam-admin/serviceaccounts), and select `Compute Admin` role (Full control of all Compute Engine resources) for your service account.
 
-Create new key as json type for your service account. Download this json file and save it in `iac/ansible/secrets` directory. 
+Create new key as json type for your service account. Download this json file and save it in `iac/ansible/secrets` directory.
 
 Go back to your terminal, please execute the following commands to create the Compute Engine instance:
 ```bash
@@ -286,4 +286,3 @@ Let checkout whether the pods have been deployed successfully in the `model-serv
 kubectl get pod -n model-serving
 ```
 You can test our app by typing `mlops.chatbot.com` on your web browser.
-

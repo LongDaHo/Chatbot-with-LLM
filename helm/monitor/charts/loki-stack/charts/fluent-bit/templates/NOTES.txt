@@ -1,6 +1,6 @@
 !WARNING! !WARNING! !WARNING! !WARNING! !WARNING!
 
-Please use the official fluent-bit chart 
+Please use the official fluent-bit chart
 
 https://github.com/fluent/helm-charts
 

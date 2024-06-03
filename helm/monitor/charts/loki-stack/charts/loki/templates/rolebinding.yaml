@@ -14,4 +14,3 @@ subjects:
 - kind: ServiceAccount
   name: {{ template "loki.serviceAccountName" . }}
 {{- end }}
-

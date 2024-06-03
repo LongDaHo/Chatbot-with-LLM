@@ -1,0 +1,96 @@
+- name: Change Docker data root
+  hosts: servers_1
+  become: yes
+  vars:
+    default_container_name: jenkins
+    default_container_image: jenkins/jenkins:latest
+  tasks:
+    - name: Install aptitude
+      apt:
+        name: aptitude
+        state: latest
+        update_cache: true
+
+    - name: Install prerequisites
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: true
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+
+    - name: Stop Docker service
+      service:
+        name: docker
+        state: stopped
+
+    - name: Ensure new Docker data root directory exists
+      file:
+        path: /dev/shm
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+
+    - name: Update Docker daemon configuration
+      lineinfile:
+        path: /etc/docker/daemon.json
+        line: '{"data-root": "/dev/shm"}'
+        create: yes
+        state: present
+        insertbefore: '^}'
+      notify: restart docker
+
+    - name: Reload systemd configuration
+      command: systemctl daemon-reload
+
+    - name: Pull the Docker image
+      community.docker.docker_image:
+        name: "{{ default_container_image }}"
+        source: pull
+
+    - name: Create the container
+      community.docker.docker_container:
+        name: "{{ default_container_name }}"
+        image: "{{ default_container_image }}"
+        state: started
+        privileged: true
+        user: root
+        volumes:
+          - jenkins_home:/var/jenkins_home
+          - /var/run/docker.sock:/var/run/docker.sock
+          - /usr/bin/docker:/usr/bin/docker
+        ports:
+          - 8081:8080
+          - 50000:50000
+        detach: yes  # Run the container in the background
+
+
+  handlers:
+    - name: restart docker
+      service:
+        name: docker
+        state: restarted

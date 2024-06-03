@@ -7,10 +7,10 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: "nginx" # which can be replaced by gce, gce-internal or istio
     nginx.org/websocket-services: {{ .Release.Name }}
-      
+
 spec:
   rules:
-  - host: mlops.chatbot.com 
+  - host: mlops.chatbot.com
     http:
       paths:
       - path: /
@@ -20,5 +20,3 @@ spec:
             name: {{ .Release.Name }}
             port:
               number: 8051
-
-

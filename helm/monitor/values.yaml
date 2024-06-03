@@ -35,8 +35,8 @@ kube-prometheus-stack:
         url: http://monitor-tempo.observability.svc.cluster.local:3100
         access: proxy
         version: 1
-        
-       
+
+
 opentelemetry-collector:
   mode: "deployment"
 
@@ -76,8 +76,8 @@ opentelemetry-collector:
 
   image:
     repository: "otel/opentelemetry-collector-k8s"
-    
-    
+
+
 loki-stack:
   loki:
     auth_enabled: false
@@ -113,8 +113,8 @@ loki-stack:
         installOperator: false
     lokiCanary:
       enabled: false
-     
-      
+
+
 tempo:
   distributor:
     receivers:
@@ -123,17 +123,17 @@ tempo:
           grpc:
 
   ingester:
-    trace_idle_period: 10s  
-    max_block_bytes: 1_000_000  
-    max_block_duration: 1m  
+    trace_idle_period: 10s
+    max_block_bytes: 1_000_000
+    max_block_duration: 1m
 
   compactor:
   compaction:
-      compaction_window: 1h             
-      max_compaction_objects: 1000000   
+      compaction_window: 1h
+      max_compaction_objects: 1000000
       block_retention: 1h
       compacted_block_retention: 10m
-      flush_size_bytes: 5242880 
+      flush_size_bytes: 5242880
 
   storage:
     trace:
@@ -142,5 +142,5 @@ tempo:
         access_key: rootuser
         secret_key: rootpass123
         endpoint: http://console.minio.svc.cluster.local:9090
-        bucket: traces 
+        bucket: traces
         insecure: true

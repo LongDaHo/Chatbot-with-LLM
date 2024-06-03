@@ -72,4 +72,3 @@ data:
 
   labelmap.json: |-
     {{- .Values.config.labelMap | toPrettyJson | nindent 4}}
-

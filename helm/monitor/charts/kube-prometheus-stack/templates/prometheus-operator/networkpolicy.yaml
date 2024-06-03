@@ -8,7 +8,7 @@ metadata:
     app: {{ template "kube-prometheus-stack.name" . }}-operator
     {{- include "kube-prometheus-stack.labels" . | nindent 4 }}
 spec:
-  egress: 
+  egress:
     - {}
   ingress:
     - ports:

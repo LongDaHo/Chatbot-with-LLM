@@ -225,4 +225,3 @@ Get ConfigMap name if existingName is defined, otherwise use default name for ge
     {{- printf "%s%s" (include "opentelemetry-collector.fullname" .) (.configmapSuffix) }}
   {{- end -}}
 {{- end }}
-

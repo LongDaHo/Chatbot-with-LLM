@@ -1,18 +1,24 @@
 import os
 import random
+
 import streamlit as st
 
-#decorator
+
+# decorator
 def enable_chat_history(func):
     # to show chat history on ui
     if "messages" not in st.session_state:
-        st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
+        st.session_state["messages"] = [
+            {"role": "assistant", "content": "How can I help you?"}
+        ]
     for msg in st.session_state["messages"]:
         st.chat_message(msg["role"]).write(msg["content"])
 
     def execute(*args, **kwargs):
         func(*args, **kwargs)
+
     return execute
+
 
 def display_msg(msg, author):
     """Method to display message on the UI

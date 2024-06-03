@@ -16,11 +16,11 @@ spec:
       - {key: app.kubernetes.io/name, operator: In, values: [prometheus]}
       - {key: prometheus, operator: In, values: [{{ template "kube-prometheus-stack.prometheus.crname" . }}]}
     {{- end }}
-  {{- if and .Values.prometheus.networkPolicy.cilium .Values.prometheus.networkPolicy.cilium.egress }}  
+  {{- if and .Values.prometheus.networkPolicy.cilium .Values.prometheus.networkPolicy.cilium.egress }}
   egress:
     {{ toYaml .Values.prometheus.networkPolicy.cilium.egress | nindent 4 }}
   {{- end }}
-  {{- if and .Values.prometheus.networkPolicy.cilium .Values.prometheus.networkPolicy.cilium.ingress }}  
+  {{- if and .Values.prometheus.networkPolicy.cilium .Values.prometheus.networkPolicy.cilium.ingress }}
   ingress:
     {{ toYaml .Values.prometheus.networkPolicy.cilium.ingress | nindent 4 }}
   {{- end }}

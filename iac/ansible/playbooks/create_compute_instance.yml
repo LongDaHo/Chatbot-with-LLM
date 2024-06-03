@@ -43,4 +43,3 @@
       project: evocative-reef-424101-n0
       auth_kind: serviceaccount
       service_account_file: ../secrets/evocative-reef-424101-n0-31aa2ec49014.json
-
