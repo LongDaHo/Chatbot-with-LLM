@@ -240,7 +240,7 @@ kubectl create clusterrolebinding model-serving-admin-binding --clusterrole=admi
 
 kubectl create clusterrolebinding anonymous-admin-binding --clusterrole=admin --user=system:anonymous --namespace=model-serving
 ```
-##### Notice: Should grant permission as admin in real application.
+##### Notice: Should not grant permission as admin in real application.
 Next, let get your certificate key and cluster url from ~/.kube/config. Then, go to Manage Jenkins > Cloud > New cloud.
 ![](assets/add_gke_con.gif)
 
