@@ -1,6 +1,6 @@
 # Simple CI/CD pipeline for LLM in production using Google Kubernetes Engine.
 ## System Architecture
-![](assets/new_pipeline.png)
+![](assets/newest_pipeline.png)
 # Table of Contents
 
 1. [Create GKE Cluster](#1-create-gke-clusterCreate-GKE-Cluster)
