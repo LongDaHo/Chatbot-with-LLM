@@ -180,7 +180,7 @@ Create new key as json type for your service account. Download this json file an
 
 Go back to your terminal, please execute the following commands to create the Compute Engine instance:
 ```bash
-cd iac/ansible/
+cd iac/ansible/playbooks
 ansible-playbook create_compute_instance.yaml
 ```
 
