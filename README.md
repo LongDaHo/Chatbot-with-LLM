@@ -149,7 +149,7 @@ Similar to Streamlit UI, Grafana UI can be accessed by the host which is defined
 Firstly, let go to `helm/monitor` directory.
 ```bash
 cd helm/monitor
-helm install monitor -n observability
+helm install monitor . -n observability
 ```
 
 After that, to access Grafana UI, you can do the following steps:
