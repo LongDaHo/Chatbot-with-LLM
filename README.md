@@ -164,7 +164,7 @@ sudo nano /etc/hosts
 [YOUR_INGRESS_IP_ADDRESS] grafana.chatbot.monitor.com
 ```
 
-+ Open web brower and type `grafana.chatbot.monitor.com` to access the Grafana UI.
++ Open web brower and type `grafana.chatbot.monitor.com` to access the Grafana UI with user is admin and password is prom-operator.
     ![](assets/monitor.gif)
 
 
