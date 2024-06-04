@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+data:
+  huggingface_api_token: {{ .Values.config.huggingface_api_token }}
+  tokenizer_name: {{ .Values.config.tokenizer_name }}
+  inference_server_url: {{ .Values.config.inference_server_url }}
+  otlp_endpoint: {{ .Values.config.otlp_endpoint }}
+  svc_name: {{ .Values.config.svc_name }}

@@ -1,0 +1,146 @@
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      serviceMonitorSelectorNilUsesHelmValues: false
+      serviceMonitorSelector: {}
+      serviceMonitorNamespaceSelector: {}
+
+  grafana:
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        nginx.ingress.kubernetes.io/rewrite-target: /$2
+      hosts: ["grafana.chatbot.monitor.com"]
+      path: /
+    sidecar:
+      datasources:
+        defaultDatasourceEnabled: true
+    additionalDataSources:
+      - name: Loki
+        type: loki
+        url: http://monitor-loki.observability.svc.cluster.local:3100
+        access: proxy
+        jsonData:
+          derivedFields:
+            - datasourceUid: tempo
+              matcherRegex: ((\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+)(\d+|[a-z]+))
+              name: TraceID
+              url: $${__value.raw}
+          maxLines: 1000
+        version: 1
+      - name: Tempo
+        type: tempo
+        uid: tempo
+        url: http://monitor-tempo.observability.svc.cluster.local:3100
+        access: proxy
+        version: 1
+
+
+opentelemetry-collector:
+  mode: "deployment"
+
+  config:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+
+    processors:
+      batch:
+       timeout: 10s
+       send_batch_size: 1024
+
+    exporters:
+      # logging:
+      #   loglevel: debug
+      otlp:
+       endpoint: monitor-tempo:4317
+       tls:
+        insecure: true
+
+    service:
+      pipelines:
+        traces:
+         receivers: [otlp]
+         processors: [batch]
+         exporters: [debug, otlp]
+
+  resources:
+    limits:
+      cpu: 250m
+      memory: 512Mi
+
+  image:
+    repository: "otel/opentelemetry-collector-k8s"
+
+
+loki-stack:
+  loki:
+    auth_enabled: false
+    isDefault: false
+    commonConfig:
+      replication_factor: 1
+    storage:
+      type: "filesystem"
+
+  fluent-bit:
+    enabled: true
+
+  singleBinary:
+    replicas: 1
+    persistence:
+      size: 50Gi
+
+  test:
+    enabled: false
+
+  gateway:
+    basicAuth:
+      enabled: true
+      username: lokigw
+      password: rQgtlRCQMswOTvh
+
+  monitoring:
+    serviceMonitor:
+      enabled: false
+    selfMonitoring:
+      enabled: false
+      grafanaAgent:
+        installOperator: false
+    lokiCanary:
+      enabled: false
+
+
+tempo:
+  distributor:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+
+  ingester:
+    trace_idle_period: 10s
+    max_block_bytes: 1_000_000
+    max_block_duration: 1m
+
+  compactor:
+  compaction:
+      compaction_window: 1h
+      max_compaction_objects: 1000000
+      block_retention: 1h
+      compacted_block_retention: 10m
+      flush_size_bytes: 5242880
+
+  storage:
+    trace:
+      backend: s3
+      s3:
+        access_key: rootuser
+        secret_key: rootpass123
+        endpoint: http://console.minio.svc.cluster.local:9090
+        bucket: traces
+        insecure: true
