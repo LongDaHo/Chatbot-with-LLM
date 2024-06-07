@@ -128,7 +128,7 @@ tempo:
     max_block_duration: 1m
 
   compactor:
-  compaction:
+    compaction:
       compaction_window: 1h
       max_compaction_objects: 1000000
       block_retention: 1h
